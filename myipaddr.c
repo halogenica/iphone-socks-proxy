@@ -1,22 +1,7 @@
 /*
- *  myipaddr.c
- *  SimpleNetworkStreams
- *
- *  Created by Ehud Ben-Reuven on 12/17/09.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
  */
 
 #include "myipaddr.h"
-
-/*
- *  ipaddr.h
- *  SimpleNetworkStreams
- *
- *  Created by Ehud Ben-Reuven on 12/17/09.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
 
 
 #include <stdio.h>
