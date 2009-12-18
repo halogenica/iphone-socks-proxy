@@ -42,8 +42,6 @@ enum {
     uint8_t                     _receivebuffer[kReceiveBufferSize];
     size_t                      _receivebufferOffset;
     size_t                      _receivebufferLimit;
-	BOOL						_spaceAvailable;
-	BOOL						_remotespaceAvailable;
 	NSUInteger					_protocolLocation;
 	NSString *					_remoteName;
 }

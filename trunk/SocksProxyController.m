@@ -79,7 +79,9 @@
     self.statusLabel.text = reason;
     [self.startOrStopButton setTitle:@"Start" forState:UIControlStateNormal];
     self.tabBarItem.image = [UIImage imageNamed:@"receiveserverOff.png"];
+#if __DEBUG__
 	NSLog(@"Server Stopped: %@",reason);
+#endif
 }
 
 - (void)_sendreceiveDidStart
@@ -93,7 +95,9 @@
 {
     assert(statusString != nil);
     self.statusLabel.text = statusString;
+#if __DEBUG__
 	NSLog(@"Status: %@",statusString);
+#endif
 }
 
 - (void)_sendreceiveDidStopWithStatus:(NSString *)statusString
@@ -110,7 +114,9 @@
 	for(i=0;i<self.nConnections;i++)
 		if ( ! self.sendreceiveStream[i].isSendingReceiving )
 			countOpen++;
+#if __DEBUG__
 	NSLog(@"Connection ended %d %d: %@",countOpen,self.nConnections,statusString);
+#endif
 }
 
 #pragma mark * Core transfer code
@@ -165,8 +171,9 @@
 	for(i=0;i<self.nConnections;i++)
 		if ( ! self.sendreceiveStream[i].isSendingReceiving )
 			countOpen++;
+#if __DEBUG__
 	NSLog(@"Accept connection %d %d",countOpen,self.nConnections);
-	
+#endif	
 	[proxy startSendReceive:fd];
 }
 
