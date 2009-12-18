@@ -33,8 +33,8 @@ enum {
 {
     NSInputStream *             _receivenetworkStream;
     NSOutputStream *             _sendnetworkStream;
-    NSOutputStream *            _fileStream;
-    NSInputStream *             _sendfileStream;
+    NSOutputStream *            _remoteSendNetworkStream;
+    NSInputStream *             _remoteReceiveNetworkStream;
     id <SocksProxyDelegate> delegate;
     uint8_t                     _sendbuffer[kSendBufferSize];
     size_t                      _sendbufferOffset;
@@ -45,6 +45,7 @@ enum {
 	BOOL						_spaceAvailable;
 	BOOL						_remotespaceAvailable;
 	NSUInteger					_protocolLocation;
+	NSString *					_remoteName;
 }
 @property (nonatomic, assign) id <SocksProxyDelegate> delegate;
 
