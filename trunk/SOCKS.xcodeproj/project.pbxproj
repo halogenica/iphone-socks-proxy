@@ -16,6 +16,7 @@
 		5463365810DABA8E00D3A3AE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5463365410DABA8E00D3A3AE /* AppDelegate.m */; };
 		5463365910DABA8E00D3A3AE /* InfoController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5463365610DABA8E00D3A3AE /* InfoController.m */; };
 		5463365A10DABA8E00D3A3AE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5463365710DABA8E00D3A3AE /* main.m */; };
+		546336D610DACA8A00D3A3AE /* entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 546336D510DACA8A00D3A3AE /* entitlements.plist */; };
 		E40F66010FB1E38600D92710 /* SocksProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = E40F65FF0FB1E38600D92710 /* SocksProxy.m */; };
 		E40F66BA0FB3029A00D92710 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E40F66B90FB3029A00D92710 /* CFNetwork.framework */; };
 		E4CE58CC0FCD595A00F80C27 /* info.png in Resources */ = {isa = PBXBuildFile; fileRef = E4CE58CB0FCD595A00F80C27 /* info.png */; };
@@ -41,6 +42,7 @@
 		5463365510DABA8E00D3A3AE /* InfoController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InfoController.h; path = AncillaryCode/InfoController.h; sourceTree = "<group>"; };
 		5463365610DABA8E00D3A3AE /* InfoController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = InfoController.m; path = AncillaryCode/InfoController.m; sourceTree = "<group>"; };
 		5463365710DABA8E00D3A3AE /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = AncillaryCode/main.m; sourceTree = "<group>"; };
+		546336D510DACA8A00D3A3AE /* entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = entitlements.plist; sourceTree = "<group>"; };
 		E40F65FF0FB1E38600D92710 /* SocksProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SocksProxy.m; sourceTree = "<group>"; };
 		E40F66000FB1E38600D92710 /* SocksProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocksProxy.h; sourceTree = "<group>"; };
 		E40F66B90FB3029A00D92710 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
@@ -94,6 +96,7 @@
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				546335FD10DAB3BE00D3A3AE /* README */,
+				546336D510DACA8A00D3A3AE /* entitlements.plist */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -172,6 +175,7 @@
 				E4E97FC80FB453CE00516113 /* receiveserverOff.png in Resources */,
 				E4CE58CC0FCD595A00F80C27 /* info.png in Resources */,
 				546335FE10DAB3BE00D3A3AE /* README in Resources */,
+				546336D610DACA8A00D3A3AE /* entitlements.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -205,8 +209,11 @@
 		1D6058950D05DD3E006BFB54 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = entitlements.plist;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = Resources/Info.plist;
-				PRODUCT_NAME = NetStreams;
+				PRODUCT_NAME = SOCKS;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 			};
 			name = Release;
 		};

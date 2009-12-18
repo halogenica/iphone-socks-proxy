@@ -79,6 +79,7 @@
     self.statusLabel.text = reason;
     [self.startOrStopButton setTitle:@"Start" forState:UIControlStateNormal];
     self.tabBarItem.image = [UIImage imageNamed:@"receiveserverOff.png"];
+	NSLog(@"Server Stopped: %@",reason);
 }
 
 - (void)_sendreceiveDidStart
@@ -92,6 +93,7 @@
 {
     assert(statusString != nil);
     self.statusLabel.text = statusString;
+	NSLog(@"Status: %@",statusString);
 }
 
 - (void)_sendreceiveDidStopWithStatus:(NSString *)statusString
@@ -102,6 +104,13 @@
     self.statusLabel.text = statusString;
     [self.activityIndicator stopAnimating];
     [[AppDelegate sharedAppDelegate] didStopNetworking];
+	
+	int countOpen=0;
+	int i;
+	for(i=0;i<self.nConnections;i++)
+		if ( ! self.sendreceiveStream[i].isSendingReceiving )
+			countOpen++;
+	NSLog(@"Connection ended %d %d: %@",countOpen,self.nConnections,statusString);
 }
 
 #pragma mark * Core transfer code
@@ -134,22 +143,31 @@
 
 - (void)_acceptConnection:(int)fd
 {
+	SocksProxy *proxy=nil;
 	int i;
 	for(i=0;i<self.nConnections;i++)
-		if ( ! self.sendreceiveStream[i].isSendingReceiving )
+		if ( ! self.sendreceiveStream[i].isSendingReceiving ) {
+			proxy = self.sendreceiveStream[i];
 			break;
+		}
 	
-	if(i>=self.nConnections) {
+	if(!proxy) {
 		if(i>NCONNECTIONS) {
 			close(fd);
 			return;
 		}
-		self.sendreceiveStream[i] = [[SocksProxy alloc] init];
+		proxy = [[SocksProxy alloc] init];
+		self.sendreceiveStream[i] = proxy;
 		self.sendreceiveStream[i].delegate = self;
 		self.nConnections++;
 	}
+	int countOpen=0;
+	for(i=0;i<self.nConnections;i++)
+		if ( ! self.sendreceiveStream[i].isSendingReceiving )
+			countOpen++;
+	NSLog(@"Accept connection %d %d",countOpen,self.nConnections);
 	
-	[self.sendreceiveStream[i] startSendReceive:fd];
+	[proxy startSendReceive:fd];
 }
 
 static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef address, const void *data, void *info)
@@ -206,7 +224,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
     // any free port, then use getsockname to find out what port number we 
     // actually got.
 
-    port = 50000;
+    port = 0;
     
     fd = socket(AF_INET, SOCK_STREAM, 0);
     success = (fd != -1);
