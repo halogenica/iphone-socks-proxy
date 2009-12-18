@@ -164,11 +164,11 @@
 		return;
 	if (self.sendbufferOffset == self.sendbufferLimit) return;
 	NSInteger   bytesWritten=self.sendbufferLimit - self.sendbufferOffset;
-#if __DEBUG__
+#ifdef DEBUG
 	NSLog(@"write P>C %d",bytesWritten);
 #endif
 	bytesWritten = [self.sendnetworkStream write:&self.sendbuffer[self.sendbufferOffset] maxLength:bytesWritten];
-#if __DEBUG__
+#ifdef DEBUG
 	NSLog(@"actually write %d",bytesWritten);
 #endif
 	assert(bytesWritten != 0);
@@ -249,7 +249,7 @@
 		uint8_t *s=self.receivebuffer+self.receivebufferOffset;
 		uint8_t *e=self.receivebuffer+self.receivebufferLimit;
 		
-#if __DEBUG__
+#ifdef DEBUG
 		NSLog(@"protocol %d %d",self.protocolLocation,e-s);
 #endif
 		switch (self.protocolLocation) {
@@ -282,7 +282,7 @@
 					buf[1]= auth[i];
 				} else {
 					buf[1] = 0xff;
-#if __DEBUG__
+#ifdef DEBUG
 					NSLog(@"unsupported authentication %d %d",auth[0],nauth);
 #endif
 				}
@@ -439,7 +439,7 @@
     // An NSStream delegate callback that's called when events happen on our 
     // network stream.
 {
-#if __DEBUG__
+#ifdef DEBUG
 	NSStream *streamName;
 	// C-Client (laptop) P-Proxy (iPhone) S-Server (remote server)
 	if (aStream == self.receivenetworkStream) {
@@ -460,13 +460,13 @@
 
     switch (eventCode) {
         case NSStreamEventOpenCompleted: {
-#if __DEBUG__
+#ifdef DEBUG
 			NSLog(@"Open %@",streamName);
 #endif
             [self.delegate _updateStatus:@"Opened connection"];
         } break;
         case NSStreamEventHasBytesAvailable: {
-#if __DEBUG__
+#ifdef DEBUG
 			NSLog(@"Receive %@",streamName);
 #endif			
 			if (aStream == self.remoteReceiveNetworkStream) {
@@ -489,7 +489,7 @@
             }
         } break;
         case NSStreamEventHasSpaceAvailable: {
-#if __DEBUG__
+#ifdef DEBUG
 			NSLog(@"Send %@",streamName);
 #endif			
 			if (aStream == self.remoteSendNetworkStream) {
@@ -502,14 +502,14 @@
 			}
         } break;
         case NSStreamEventErrorOccurred: {
-#if __DEBUG__
+#ifdef DEBUG
 			NSLog(@"Error %@",streamName);
 #endif			
             [self stopSendReceiveWithStatus:@"Stream open error"];
         } break;
         case NSStreamEventEndEncountered: {
             // ignore
-#if __DEBUG__
+#ifdef DEBUG
 			NSLog(@"End %@",streamName);
 #endif			
         } break;

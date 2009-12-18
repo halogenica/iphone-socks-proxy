@@ -35,7 +35,7 @@ char * myipaddr(void)
 		cursor = addrs;
 		while (cursor != NULL) {
 			if ((cursor->ifa_flags & IFF_LOOPBACK) == 0 ) {
-#if __DEBUG__
+#ifdef DEBUG
 				printf("%s ", (char *)cursor->ifa_name);
 				printf("%s\n",inet_ntoa(((struct sockaddr_in *)cursor->ifa_addr)->sin_addr));
 #endif
@@ -49,7 +49,7 @@ char * myipaddr(void)
 				//      fprintf(stderr, " sdl_nlen = %d\n", dlAddr->sdl_nlen);
 				//      fprintf(stderr, " sdl_alen = %d\n", dlAddr->sdl_alen);
 				base = (const uint8_t *) &dlAddr->sdl_data[dlAddr->sdl_nlen];
-#if __DEBUG__
+#ifdef DEBUG
 				{
 					int i;
 					printf(" MAC address ");
