@@ -233,34 +233,42 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 
     port = 0;
     
-    fd = socket(AF_INET, SOCK_STREAM, 0);
-    success = (fd != -1);
-    
-    if (success) {
-        memset(&addr, 0, sizeof(addr));
-        addr.sin_len    = sizeof(addr);
-        addr.sin_family = AF_INET;
-        addr.sin_port   = htons(port);
-        addr.sin_addr.s_addr = INADDR_ANY;
-        err = bind(fd, (const struct sockaddr *) &addr, sizeof(addr));
-        success = (err == 0);
-    }
-    if (success) {
-        err = listen(fd, 5);
-        success = (err == 0);
-    }
-    if (success) {
-        socklen_t   addrLen;
+	fd = socket(AF_INET, SOCK_STREAM, 0);
+	success = (fd != -1);
 
-        addrLen = sizeof(addr);
-        err = getsockname(fd, (struct sockaddr *) &addr, &addrLen);
-        success = (err == 0);
-        
-        if (success) {
-            assert(addrLen == sizeof(addr));
-            port = ntohs(addr.sin_port);
-        }
-    }
+	if (success) {
+		memset(&addr, 0, sizeof(addr));
+		addr.sin_len    = sizeof(addr);
+		addr.sin_family = AF_INET;
+		addr.sin_addr.s_addr = INADDR_ANY;
+		
+		int iport;
+		int ports[] = {50000,0,-1};
+		for (iport=0; ports[iport]>=0; iport++) {
+			port=ports[iport];
+			addr.sin_port   = htons(port);
+			err = bind(fd, (const struct sockaddr *) &addr, sizeof(addr));
+			success = (err == 0);
+			if (success)
+				break;
+		}
+	}
+	if (success) {
+		err = listen(fd, 5);
+		success = (err == 0);
+	}
+	if (success) {
+		socklen_t   addrLen;
+
+		addrLen = sizeof(addr);
+		err = getsockname(fd, (struct sockaddr *) &addr, &addrLen);
+		success = (err == 0);
+		
+		if (success) {
+			assert(addrLen == sizeof(addr));
+			port = ntohs(addr.sin_port);
+		}
+	}
     if (success) {
         CFSocketContext context = { 0, self, NULL, NULL, NULL };
         
