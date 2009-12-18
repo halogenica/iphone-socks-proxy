@@ -202,6 +202,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				INFOPLIST_FILE = Resources/Info.plist;
+				OTHER_CFLAGS = "-DDEBUG";
 				PRODUCT_NAME = SOCKS;
 			};
 			name = Debug;

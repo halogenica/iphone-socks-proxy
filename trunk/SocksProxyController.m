@@ -79,7 +79,7 @@
     self.statusLabel.text = reason;
     [self.startOrStopButton setTitle:@"Start" forState:UIControlStateNormal];
     self.tabBarItem.image = [UIImage imageNamed:@"receiveserverOff.png"];
-#if __DEBUG__
+#ifdef DEBUG
 	NSLog(@"Server Stopped: %@",reason);
 #endif
 }
@@ -95,7 +95,7 @@
 {
     assert(statusString != nil);
     self.statusLabel.text = statusString;
-#if __DEBUG__
+#ifdef DEBUG
 	NSLog(@"Status: %@",statusString);
 #endif
 }
@@ -114,7 +114,7 @@
 	for(i=0;i<self.nConnections;i++)
 		if ( ! self.sendreceiveStream[i].isSendingReceiving )
 			countOpen++;
-#if __DEBUG__
+#ifdef DEBUG
 	NSLog(@"Connection ended %d %d: %@",countOpen,self.nConnections,statusString);
 #endif
 }
@@ -171,7 +171,7 @@
 	for(i=0;i<self.nConnections;i++)
 		if ( ! self.sendreceiveStream[i].isSendingReceiving )
 			countOpen++;
-#if __DEBUG__
+#ifdef DEBUG
 	NSLog(@"Accept connection %d %d",countOpen,self.nConnections);
 #endif	
 	[proxy startSendReceive:fd];
@@ -243,7 +243,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 		addr.sin_addr.s_addr = INADDR_ANY;
 		
 		int iport;
-		int ports[] = {50000,0,-1};
+		int ports[] = {20000,30000,40000,50000,0,-1};
 		for (iport=0; ports[iport]>=0; iport++) {
 			port=ports[iport];
 			addr.sin_port   = htons(port);
