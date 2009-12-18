@@ -37,8 +37,6 @@
 @property (nonatomic, readonly) uint8_t *           receivebuffer;
 @property (nonatomic, assign)   size_t              receivebufferOffset;
 @property (nonatomic, assign)   size_t              receivebufferLimit;
-@property (nonatomic, assign)   BOOL				spaceAvailable;
-@property (nonatomic, assign)   BOOL				remotespaceAvailable;
 @property (nonatomic, assign)   NSUInteger			protocolLocation;
 @property (nonatomic, retain)   NSString *			remoteName;
 
@@ -58,8 +56,6 @@
 @synthesize sendbufferLimit     = _sendbufferLimit;
 @synthesize receivebufferOffset    = _receivebufferOffset;
 @synthesize receivebufferLimit     = _receivebufferLimit;
-@synthesize spaceAvailable  = _spaceAvailable;
-@synthesize remotespaceAvailable  = _remotespaceAvailable;
 @synthesize protocolLocation  = _protocolLocation;
 @synthesize delegate;
 @synthesize remoteName			= _remoteName;
@@ -164,15 +160,17 @@
 
 - (void)sendBuffer
 {
-	//if (!self.spaceAvailable) return;
 	if (![self.sendnetworkStream hasSpaceAvailable])
 		return;
 	if (self.sendbufferOffset == self.sendbufferLimit) return;
-	self.spaceAvailable=FALSE;
 	NSInteger   bytesWritten=self.sendbufferLimit - self.sendbufferOffset;
+#if __DEBUG__
 	NSLog(@"write P>C %d",bytesWritten);
+#endif
 	bytesWritten = [self.sendnetworkStream write:&self.sendbuffer[self.sendbufferOffset] maxLength:bytesWritten];
+#if __DEBUG__
 	NSLog(@"actually write %d",bytesWritten);
+#endif
 	assert(bytesWritten != 0);
 	if (bytesWritten == -1) {
 		[self stopSendReceiveWithStatus:@"Network write error"];
@@ -186,12 +184,10 @@
 }
 - (void)sendremoteBuffer
 {
-	//if (!self.remotespaceAvailable) return;
 	if (![self.remoteSendNetworkStream hasSpaceAvailable])
 		return;
 
 	if (self.receivebufferOffset == self.receivebufferLimit) return;
-	self.remotespaceAvailable=FALSE;
 	NSInteger   bytesWritten;
 	bytesWritten = [self.remoteSendNetworkStream write:&self.receivebuffer[self.receivebufferOffset]
 								maxLength:self.receivebufferLimit - self.receivebufferOffset];
@@ -253,7 +249,9 @@
 		uint8_t *s=self.receivebuffer+self.receivebufferOffset;
 		uint8_t *e=self.receivebuffer+self.receivebufferLimit;
 		
+#if __DEBUG__
 		NSLog(@"protocol %d %d",self.protocolLocation,e-s);
+#endif
 		switch (self.protocolLocation) {
 			case 0: {// The initial greeting from the client is
 				// SOCKS protocl version
@@ -284,7 +282,9 @@
 					buf[1]= auth[i];
 				} else {
 					buf[1] = 0xff;
+#if __DEBUG__
 					NSLog(@"unsupported authentication %d %d",auth[0],nauth);
+#endif
 				}
 				
 				if ([self sendData:buf size:2] != 2) {
@@ -438,7 +438,8 @@
 - (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode
     // An NSStream delegate callback that's called when events happen on our 
     // network stream.
-{	
+{
+#if __DEBUG__
 	NSStream *streamName;
 	// C-Client (laptop) P-Proxy (iPhone) S-Server (remote server)
 	if (aStream == self.receivenetworkStream) {
@@ -455,15 +456,19 @@
 	if (self.remoteName) {
 		streamName = [NSString stringWithFormat:@"%@ %@",streamName,self.remoteName]; 
 	}
+#endif
 
     switch (eventCode) {
         case NSStreamEventOpenCompleted: {
+#if __DEBUG__
 			NSLog(@"Open %@",streamName);
+#endif
             [self.delegate _updateStatus:@"Opened connection"];
         } break;
         case NSStreamEventHasBytesAvailable: {
+#if __DEBUG__
 			NSLog(@"Receive %@",streamName);
-			
+#endif			
 			if (aStream == self.remoteReceiveNetworkStream) {
 				// data is coming from the remote site
 				NSInteger       bytesRead;
@@ -484,27 +489,29 @@
             }
         } break;
         case NSStreamEventHasSpaceAvailable: {
+#if __DEBUG__
 			NSLog(@"Send %@",streamName);
-			
+#endif			
 			if (aStream == self.remoteSendNetworkStream) {
 				//remote host is ready to receive data
-				self.remotespaceAvailable=TRUE;
 				[self sendremoteBuffer];
 				break;
 			} else if (aStream == self.sendnetworkStream) {
-				self.spaceAvailable=TRUE;
+				//local host is ready to receive data
 				[self sendBuffer];
 			}
         } break;
         case NSStreamEventErrorOccurred: {
+#if __DEBUG__
 			NSLog(@"Error %@",streamName);
-			
+#endif			
             [self stopSendReceiveWithStatus:@"Stream open error"];
         } break;
         case NSStreamEventEndEncountered: {
-			NSLog(@"End %@",streamName);
-			
             // ignore
+#if __DEBUG__
+			NSLog(@"End %@",streamName);
+#endif			
         } break;
         default: {
             assert(NO);
