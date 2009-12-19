@@ -190,7 +190,8 @@
 #ifdef DEBUG
 	NSLog(@"Accept connection %d %d",countOpen,self.nConnections);
 #endif	
-	[proxy startSendReceive:fd];
+	if(![proxy startSendReceive:fd])
+		close(fd);
 }
 
 static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef address, const void *data, void *info)
