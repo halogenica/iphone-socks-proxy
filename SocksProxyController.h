@@ -28,6 +28,8 @@ enum {
     UILabel *                   _portLabel;
     UILabel *                   _addressLabel;
     UILabel *                   _statusLabel;
+	UILabel *					_countOpenLabel;
+	UILabel *					_nConnectionsLabel;
     UIActivityIndicatorView *   _activityIndicator;
     UIButton *                  _startOrStopButton;
     
@@ -41,6 +43,8 @@ enum {
 @property (nonatomic, retain) IBOutlet UILabel *                   addressLabel;
 @property (nonatomic, retain) IBOutlet UILabel *                   portLabel;
 @property (nonatomic, retain) IBOutlet UILabel *                   statusLabel;
+@property (nonatomic, retain) IBOutlet UILabel *                   countOpenLabel;
+@property (nonatomic, retain) IBOutlet UILabel *                   nConnectionsLabel;
 @property (nonatomic, retain) IBOutlet UIActivityIndicatorView *   activityIndicator;
 @property (nonatomic, retain) IBOutlet UIButton *                  startOrStopButton;
 

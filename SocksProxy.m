@@ -439,8 +439,7 @@
     // An NSStream delegate callback that's called when events happen on our 
     // network stream.
 {
-#ifdef DEBUG
-	NSStream *streamName;
+	NSString *streamName;
 	// C-Client (laptop) P-Proxy (iPhone) S-Server (remote server)
 	if (aStream == self.receivenetworkStream) {
 		streamName = @"C>P";
@@ -456,7 +455,6 @@
 	if (self.remoteName) {
 		streamName = [NSString stringWithFormat:@"%@ %@",streamName,self.remoteName]; 
 	}
-#endif
 
     switch (eventCode) {
         case NSStreamEventOpenCompleted: {
@@ -502,9 +500,11 @@
 			}
         } break;
         case NSStreamEventErrorOccurred: {
-#ifdef DEBUG
 			NSLog(@"Error %@",streamName);
-#endif			
+			NSError *err = [aStream streamError];
+			NSLog(@"code %d",[err code],[err domain],[err userInfo]);
+			NSLog(@"domain %@",[err domain]);
+			NSLog(@"userInfo %@",[err userInfo]);
             [self stopSendReceiveWithStatus:@"Stream open error"];
         } break;
         case NSStreamEventEndEncountered: {
