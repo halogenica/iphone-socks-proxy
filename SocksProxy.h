@@ -49,6 +49,6 @@ enum {
 
 @property (nonatomic, readonly) BOOL                isSendingReceiving;
 - (void)stopSendReceiveWithStatus:(NSString *)statusString;
-- (void)startSendReceive:(int)fd;
+- (BOOL)startSendReceive:(int)fd;
 
 @end

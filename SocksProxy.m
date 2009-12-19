@@ -77,23 +77,33 @@
     return (self.receivenetworkStream != nil) || (self.sendnetworkStream != nil);
 }
 
-- (void)startSendReceive:(int)fd
+- (BOOL)startSendReceive:(int)fd
 {
     CFReadStreamRef     readStream;
     CFWriteStreamRef    writeStream;
     
-    assert(fd >= 0);
-
-    assert(self.receivenetworkStream == nil);      // can't already be receiving
-    assert(self.remoteSendNetworkStream == nil);         // ditto
-    assert(self.remoteReceiveNetworkStream == nil);         // ditto
+    if(fd < 0)
+		return NO;
+	
+	self.receivebufferOffset = 0;
+    self.receivebufferLimit  = 0;
+	self.sendbufferOffset = 0;
+    self.sendbufferLimit  = 0;
+	self.remoteName=nil;
 	self.protocolLocation=0;
+	self.receivenetworkStream = nil;
+	self.sendnetworkStream = nil;
+	self.remoteSendNetworkStream = nil;
+	self.remoteReceiveNetworkStream = nil;
 	
     // Open a stream based on the existing socket file descriptor.  Then configure 
     // the stream for async operation.
 
     CFStreamCreatePairWithSocket(NULL, fd, &readStream, &writeStream);
-    assert(readStream != NULL);
+    if(readStream == NULL)
+		return NO;
+    if(writeStream == NULL)
+		return NO;
     
     self.receivenetworkStream = (NSInputStream *) readStream;
     self.sendnetworkStream = (NSOutputStream *) writeStream;
@@ -115,6 +125,7 @@
 	// Tell the UI we're receiving.
 	
 	[self.delegate _sendreceiveDidStart];
+	return YES;
 }
 
 - (void)stopSendReceiveWithStatus:(NSString *)statusString
@@ -123,26 +134,19 @@
         self.receivenetworkStream.delegate = nil;
         [self.receivenetworkStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
         [self.receivenetworkStream close];
-        self.receivenetworkStream = nil;
     }
-	self.receivebufferOffset = 0;
-    self.receivebufferLimit  = 0;
 
     if (self.sendnetworkStream != nil) {
         [self.sendnetworkStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
         self.sendnetworkStream.delegate = nil;
         [self.sendnetworkStream close];
-        self.sendnetworkStream = nil;
     }
-	self.sendbufferOffset = 0;
-    self.sendbufferLimit  = 0;
 		
 	//remote send
     if (self.remoteSendNetworkStream != nil) {
         [self.remoteSendNetworkStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
         self.remoteSendNetworkStream.delegate = nil;
         [self.remoteSendNetworkStream close];
-        self.remoteSendNetworkStream = nil;
     }
 
 	//remote receive
@@ -150,10 +154,18 @@
         [self.remoteReceiveNetworkStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
         self.remoteReceiveNetworkStream.delegate = nil;
         [self.remoteReceiveNetworkStream close];
-        self.remoteReceiveNetworkStream = nil;
     }
 
+	self.receivebufferOffset = 0;
+    self.receivebufferLimit  = 0;
+	self.sendbufferOffset = 0;
+    self.sendbufferLimit  = 0;
 	self.remoteName=nil;
+	self.protocolLocation=0;
+	self.receivenetworkStream = nil;
+	self.sendnetworkStream = nil;
+	self.remoteSendNetworkStream = nil;
+	self.remoteReceiveNetworkStream = nil;
 	
     [self.delegate _sendreceiveDidStopWithStatus:statusString];
 }
@@ -439,6 +451,10 @@
     // An NSStream delegate callback that's called when events happen on our 
     // network stream.
 {
+	if (aStream==nil) {
+		NSLog(@"nil stream");
+		return;
+	}
 	NSString *streamName;
 	// C-Client (laptop) P-Proxy (iPhone) S-Server (remote server)
 	if (aStream == self.receivenetworkStream) {
@@ -450,7 +466,8 @@
 	} else if (aStream == self.remoteSendNetworkStream) {
 		streamName = @"P>S";
 	} else {
-		streamName = @"Unknown";
+		NSLog(@"Unknown stream");
+		return;
 	}
 	if (self.remoteName) {
 		streamName = [NSString stringWithFormat:@"%@ %@",streamName,self.remoteName]; 

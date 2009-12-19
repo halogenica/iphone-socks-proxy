@@ -66,6 +66,8 @@ char * myipaddr(void)
 			cursor = cursor->ifa_next;
 		}
 	}
+	if(addrs)
+		freeifaddrs(addrs);
 	if(en0cursor!=NULL) {
 		char *s = inet_ntoa(((struct sockaddr_in *)en0cursor->ifa_addr)->sin_addr);
 		if (strcmp(s,"6.3.6.0"))
