@@ -84,11 +84,27 @@
 #endif
 }
 
+- (NSInteger)countOpen
+{
+	int countOpen=0;
+	int i;
+	for(i=0;i<self.nConnections;i++)
+		if ( ! self.sendreceiveStream[i].isSendingReceiving )
+			countOpen++;
+	return countOpen;
+}
+
 - (void)_sendreceiveDidStart
 {
     self.statusLabel.text = @"Receiving";
-    [self.activityIndicator startAnimating];
-    [[AppDelegate sharedAppDelegate] didStartNetworking];
+	
+	
+	NSInteger countOpen=[self countOpen];
+	self.countOpenLabel.text = [NSString stringWithFormat:@"%d",countOpen];
+	if (!countOpen) {
+		[self.activityIndicator startAnimating];
+		[[AppDelegate sharedAppDelegate] didStartNetworking];
+	}
 }
 
 - (void)_updateStatus:(NSString *)statusString
@@ -106,14 +122,13 @@
         statusString = @"Receive succeeded";
     }
     self.statusLabel.text = statusString;
-    [self.activityIndicator stopAnimating];
-    [[AppDelegate sharedAppDelegate] didStopNetworking];
 	
-	int countOpen=0;
-	int i;
-	for(i=0;i<self.nConnections;i++)
-		if ( ! self.sendreceiveStream[i].isSendingReceiving )
-			countOpen++;
+	NSInteger countOpen=[self countOpen];
+	self.countOpenLabel.text = [NSString stringWithFormat:@"%d",countOpen];
+	if (!countOpen) {
+		[self.activityIndicator stopAnimating];
+		[[AppDelegate sharedAppDelegate] didStopNetworking];		
+	}
 #ifdef DEBUG
 	NSLog(@"Connection ended %d %d: %@",countOpen,self.nConnections,statusString);
 #endif
@@ -166,6 +181,7 @@
 		self.sendreceiveStream[i] = proxy;
 		self.sendreceiveStream[i].delegate = self;
 		self.nConnections++;
+		self.nConnectionsLabel.text = [NSString stringWithFormat:@"%d",self.nConnections];
 	}
 	int countOpen=0;
 	for(i=0;i<self.nConnections;i++)
@@ -364,6 +380,8 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 @synthesize addressLabel       = _addressLabel;
 @synthesize portLabel       = _portLabel;
 @synthesize statusLabel       = _statusLabel;
+@synthesize countOpenLabel       = _countOpenLabel;
+@synthesize nConnectionsLabel       = _nConnectionsLabel;
 @synthesize activityIndicator = _activityIndicator;
 @synthesize startOrStopButton = _startOrStopButton;
 
