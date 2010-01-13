@@ -76,6 +76,13 @@
     #pragma unused(application)
     assert(self.window != nil);
     assert(self.tabs != nil);
+	
+	//Disable device sleep mode
+	[UIApplication sharedApplication].idleTimerDisabled = YES;
+	
+	//Enable proximity sensor (public as of 3.0)
+	UIDevice *device = [UIDevice currentDevice];
+	device.proximityMonitoringEnabled = YES;
     
     [self.window addSubview:self.tabs.view];
     
@@ -87,6 +94,9 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     #pragma unused(application)
+	//Reenable device sleep mode on exit
+	[UIApplication sharedApplication].idleTimerDisabled = NO;
+	
     [[NSUserDefaults standardUserDefaults] setInteger:self.tabs.selectedIndex forKey:@"currentTab"];
 }
 
