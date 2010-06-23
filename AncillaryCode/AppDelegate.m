@@ -100,6 +100,16 @@
     [[NSUserDefaults standardUserDefaults] setInteger:self.tabs.selectedIndex forKey:@"currentTab"];
 }
 
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+    NSLog(@"%s", __func__);
+    __block UIBackgroundTaskIdentifier ident;
+    ident = [application beginBackgroundTaskWithExpirationHandler: ^{
+        NSLog(@"Background task expiring!");
+        [application endBackgroundTask: ident];
+    }];
+}
+
 - (void)didStartNetworking
 {
     self.networkingCount += 1;
