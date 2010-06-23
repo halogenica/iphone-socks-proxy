@@ -29,7 +29,7 @@ enum {
 - (void) _sendreceiveDidStopWithStatus:(NSString *)statusString;
 @end
 
-@interface SocksProxy : NSObject
+@interface SocksProxy : NSObject <NSStreamDelegate>
 {
     NSInputStream *             _receivenetworkStream;
     NSOutputStream *             _sendnetworkStream;

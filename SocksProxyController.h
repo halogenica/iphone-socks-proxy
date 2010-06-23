@@ -23,7 +23,7 @@ enum {
 	NCONNECTIONS=100
 };
 
-@interface SocksProxyController : UIViewController <SocksProxyDelegate>
+@interface SocksProxyController : UIViewController <SocksProxyDelegate, NSNetServiceDelegate>
 {
     UILabel *                   _portLabel;
     UILabel *                   _addressLabel;
