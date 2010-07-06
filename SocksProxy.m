@@ -337,7 +337,7 @@
 				//address
 				if (addr_type==1) {
 					if(e-s<4) break;
-					in_addr_t ipaddr = ntohl(*s);
+					in_addr_t ipaddr = ntohl(*(uint32_t*)s);
 					s+=4;
 					addr = [NSString stringWithFormat:@"%d.%d.%d.%d",
 								 0xff&(ipaddr>>24),
