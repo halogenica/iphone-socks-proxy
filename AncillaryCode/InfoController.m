@@ -71,6 +71,7 @@
     assert(request != nil);
     
     [self.webView loadRequest:request];
+	self.webView.backgroundColor = [UIColor scrollViewTexturedBackgroundColor];
 }
 
 #pragma mark * View controller boilerplate

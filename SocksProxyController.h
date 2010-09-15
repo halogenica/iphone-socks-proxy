@@ -38,16 +38,24 @@ enum {
 	
 	NSInteger				_nConnections;
 	SocksProxy *			_sendreceiveStream[NCONNECTIONS];
+	IBOutlet UITableView * proxyTableView;
+	
+@private
+    NSInteger currentPort;
+    NSString *currentAddress;
+    NSInteger currentOpenConnections;
+    NSInteger currentConnectionCount;
 }
 
-@property (nonatomic, retain) IBOutlet UILabel *                   addressLabel;
-@property (nonatomic, retain) IBOutlet UILabel *                   portLabel;
+@property (nonatomic, assign) NSInteger currentPort;
+@property (nonatomic, copy) NSString *currentAddress;
+@property (nonatomic, assign) NSInteger currentOpenConnections;
+@property (nonatomic, assign) NSInteger currentConnectionCount;
 @property (nonatomic, retain) IBOutlet UILabel *                   statusLabel;
-@property (nonatomic, retain) IBOutlet UILabel *                   countOpenLabel;
-@property (nonatomic, retain) IBOutlet UILabel *                   nConnectionsLabel;
 @property (nonatomic, retain) IBOutlet UIActivityIndicatorView *   activityIndicator;
 @property (nonatomic, retain) IBOutlet UIButton *                  startOrStopButton;
 
 - (IBAction)startOrStopAction:(id)sender;
 
+- (void)refreshProxyTable;
 @end

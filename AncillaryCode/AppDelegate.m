@@ -52,11 +52,19 @@
 */
 
 #import "AppDelegate.h"
-
 #import "InfoController.h"
 
+/// background timer task constants
+// converts mins to seconds
+#define MINS(N) N * 60
+// number of minutes until the critical or warning UIAlert is displayed
+#define PROXY_BG_TIME_CRITICAL_MINS 1
+#define PROXY_BG_TIME_WARNING_MINS 7
+// interval of seconds to poll/check the time remaining for the background task
+#define PROXY_BG_TIME_CHECK_SECS 10
+
 @interface AppDelegate ()
-@property (nonatomic, assign) NSInteger             networkingCount;
+@property (nonatomic, assign) NSInteger networkingCount;
 @end
 
 @implementation AppDelegate
@@ -66,8 +74,8 @@
     return (AppDelegate *) [UIApplication sharedApplication].delegate;
 }
 
-@synthesize window      = _window;
-@synthesize tabs        = _tabs;
+@synthesize window = _window;
+@synthesize tabs = _tabs;
 
 @synthesize networkingCount = _networkingCount;
 
@@ -77,12 +85,11 @@
     assert(self.window != nil);
     assert(self.tabs != nil);
 	
-	//Disable device sleep mode
+	// Disable device sleep mode
 	[UIApplication sharedApplication].idleTimerDisabled = YES;
 	
-	//Enable proximity sensor (public as of 3.0)
-	UIDevice *device = [UIDevice currentDevice];
-	device.proximityMonitoringEnabled = YES;
+	// Enable proximity sensor (public as of 3.0)
+	[UIDevice currentDevice].proximityMonitoringEnabled = YES;
     
     [self.window addSubview:self.tabs.view];
     
@@ -94,7 +101,8 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     #pragma unused(application)
-	//Reenable device sleep mode on exit
+	
+	// Reenable device sleep mode on exit
 	[UIApplication sharedApplication].idleTimerDisabled = NO;
 	
     [[NSUserDefaults standardUserDefaults] setInteger:self.tabs.selectedIndex forKey:@"currentTab"];
@@ -102,12 +110,31 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    NSLog(@"%s", __func__);
+    DLog(@"%s", __func__);
+
+	// if no networking, then ignore the bg operations
+	if (![UIApplication sharedApplication].networkActivityIndicatorVisible)
+		return;
+	
+	_criticalTimeAlertShown = NO;
+	_warningTimeAlertShown = NO;
+	_bgTimer = [NSTimer scheduledTimerWithTimeInterval:PROXY_BG_TIME_CHECK_SECS
+												target:self
+											  selector:@selector(checkBackgroundTimeRemaining:)
+											  userInfo:nil
+											   repeats:YES];
     __block UIBackgroundTaskIdentifier ident;
+	
     ident = [application beginBackgroundTaskWithExpirationHandler: ^{
-        NSLog(@"Background task expiring!");
+        DLog(@"Background task expiring!");
+		
         [application endBackgroundTask: ident];
     }];
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application
+{
+	[_bgTimer invalidate];
 }
 
 - (void)didStartNetworking
@@ -118,9 +145,57 @@
 
 - (void)didStopNetworking
 {
-    assert(self.networkingCount > 0);
-    self.networkingCount -= 1;
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = (self.networkingCount != 0);
+	if (self.networkingCount > 0)
+		self.networkingCount -= 1;
+	
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = (self.networkingCount > 0);
 }
 
+- (void)checkBackgroundTimeRemaining:(NSTimer *)tmr
+{
+	// if no networking, then ignore the bg operations
+	if (![UIApplication sharedApplication].networkActivityIndicatorVisible)
+		return;
+	
+	NSTimeInterval timeLeft = [UIApplication sharedApplication].backgroundTimeRemaining;
+	
+	DLog(@"Background time remaining: %.0f seconds (~%d mins)", timeLeft, (int)timeLeft / 60);
+
+	UILocalNotification *notif = nil;
+	
+	// check the critical and warning thresholds
+	if (timeLeft <= MINS(PROXY_BG_TIME_CRITICAL_MINS)
+		&& !_criticalTimeAlertShown)
+	{
+		NSString *msg = NSLocalizedString(@"Critical: Tether time expiring in %.0f seconds", nil);
+		DLog(msg);
+		
+		// build the UIAlert to be displayed
+		notif = [UILocalNotification new];
+		notif.alertBody = [NSString stringWithFormat:msg, timeLeft];
+		
+		_criticalTimeAlertShown = YES;
+	}
+	else if (timeLeft <= MINS(PROXY_BG_TIME_WARNING_MINS)
+			&& !_warningTimeAlertShown)
+	{
+		NSString *msg = NSLocalizedString(@"Warning: Tether time expiring in %d minutes", nil);
+		DLog(msg);
+		
+		// build the UIAlert to be displayed
+		notif = [UILocalNotification new];
+		notif.alertBody = [NSString stringWithFormat:msg, (int)timeLeft / 60];
+		
+		_warningTimeAlertShown = YES;
+	}
+	
+	if (notif) 
+	{		
+		notif.alertAction = NSLocalizedString(@"Renew Time", nil);
+		
+		// show the alert immediately
+		[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
+		[notif release];
+	}
+}
 @end

@@ -17,11 +17,11 @@
  # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,USA.
  */
 #import <UIKit/UIKit.h>
+
 enum {
     kSendBufferSize = 32768,
     kReceiveBufferSize = 32768
 };
-
 
 @protocol SocksProxyDelegate <NSObject>
 - (void)_updateStatus:(NSString *)statusString;
@@ -45,9 +45,10 @@ enum {
 	NSUInteger					_protocolLocation;
 	NSString *					_remoteName;
 }
-@property (nonatomic, assign) id <SocksProxyDelegate> delegate;
 
-@property (nonatomic, readonly) BOOL                isSendingReceiving;
+@property (nonatomic, assign) id <SocksProxyDelegate> delegate;
+@property (nonatomic, readonly) BOOL isSendingReceiving;
+
 - (void)stopSendReceiveWithStatus:(NSString *)statusString;
 - (BOOL)startSendReceive:(int)fd;
 

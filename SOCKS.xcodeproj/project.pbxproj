@@ -14,11 +14,13 @@
 		49B6F91E12394DEC005D89AC /* icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 49B6F91B12394DEC005D89AC /* icon@2x.png */; };
 		49B6F91F12394DEC005D89AC /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = 49B6F91C12394DEC005D89AC /* iTunesArtwork */; };
 		54122F1B10D88D4900836166 /* SocksProxyController.m in Sources */ = {isa = PBXBuildFile; fileRef = 54122F1A10D88D4900836166 /* SocksProxyController.m */; };
-		5463346C10DA6BE400D3A3AE /* myipaddr.c in Sources */ = {isa = PBXBuildFile; fileRef = 5463346B10DA6BE400D3A3AE /* myipaddr.c */; };
+		542A644E1241261A003497CD /* SocksProxyController_TableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 542A644B1241261A003497CD /* SocksProxyController_TableView.m */; };
+		542A644F1241261A003497CD /* UIDevice_Extended.m in Sources */ = {isa = PBXBuildFile; fileRef = 542A644D1241261A003497CD /* UIDevice_Extended.m */; };
 		546335FE10DAB3BE00D3A3AE /* README in Resources */ = {isa = PBXBuildFile; fileRef = 546335FD10DAB3BE00D3A3AE /* README */; };
 		5463365810DABA8E00D3A3AE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5463365410DABA8E00D3A3AE /* AppDelegate.m */; };
 		5463365910DABA8E00D3A3AE /* InfoController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5463365610DABA8E00D3A3AE /* InfoController.m */; };
 		5463365A10DABA8E00D3A3AE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5463365710DABA8E00D3A3AE /* main.m */; };
+		54A0F9C6124127CC008878EF /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54A0F9C5124127CC008878EF /* SystemConfiguration.framework */; };
 		E40F66010FB1E38600D92710 /* SocksProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = E40F65FF0FB1E38600D92710 /* SocksProxy.m */; };
 		E40F66BA0FB3029A00D92710 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E40F66B90FB3029A00D92710 /* CFNetwork.framework */; };
 		E4CE58CC0FCD595A00F80C27 /* info.png in Resources */ = {isa = PBXBuildFile; fileRef = E4CE58CB0FCD595A00F80C27 /* info.png */; };
@@ -32,21 +34,25 @@
 /* Begin PBXFileReference section */
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623EB0D0F72F000981E51 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		1D6058910D05DD3D006BFB54 /* SOCKS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SOCKS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D6058910D05DD3D006BFB54 /* Tethering.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tethering.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		49B6F91A12394DEC005D89AC /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 		49B6F91B12394DEC005D89AC /* icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon@2x.png"; sourceTree = "<group>"; };
 		49B6F91C12394DEC005D89AC /* iTunesArtwork */ = {isa = PBXFileReference; lastKnownFileType = file; path = iTunesArtwork; sourceTree = "<group>"; };
+		54074CF2124127320036116E /* SocksProxy_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocksProxy_Prefix.pch; sourceTree = "<group>"; };
 		54122F1A10D88D4900836166 /* SocksProxyController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SocksProxyController.m; sourceTree = "<group>"; };
 		54122F1F10D88DBE00836166 /* SocksProxyController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocksProxyController.h; sourceTree = "<group>"; };
-		5463346A10DA6BE400D3A3AE /* myipaddr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = myipaddr.h; sourceTree = "<group>"; };
-		5463346B10DA6BE400D3A3AE /* myipaddr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = myipaddr.c; sourceTree = "<group>"; };
+		542A644A1241261A003497CD /* SocksProxyController_TableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocksProxyController_TableView.h; sourceTree = "<group>"; };
+		542A644B1241261A003497CD /* SocksProxyController_TableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SocksProxyController_TableView.m; sourceTree = "<group>"; };
+		542A644C1241261A003497CD /* UIDevice_Extended.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDevice_Extended.h; sourceTree = "<group>"; };
+		542A644D1241261A003497CD /* UIDevice_Extended.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDevice_Extended.m; sourceTree = "<group>"; };
 		546335FD10DAB3BE00D3A3AE /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		5463365310DABA8E00D3A3AE /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = AncillaryCode/AppDelegate.h; sourceTree = "<group>"; };
 		5463365410DABA8E00D3A3AE /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = AncillaryCode/AppDelegate.m; sourceTree = "<group>"; };
 		5463365510DABA8E00D3A3AE /* InfoController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InfoController.h; path = AncillaryCode/InfoController.h; sourceTree = "<group>"; };
 		5463365610DABA8E00D3A3AE /* InfoController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = InfoController.m; path = AncillaryCode/InfoController.m; sourceTree = "<group>"; };
 		5463365710DABA8E00D3A3AE /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = AncillaryCode/main.m; sourceTree = "<group>"; };
+		54A0F9C5124127CC008878EF /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		E40F65FF0FB1E38600D92710 /* SocksProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SocksProxy.m; sourceTree = "<group>"; };
 		E40F66000FB1E38600D92710 /* SocksProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocksProxy.h; sourceTree = "<group>"; };
 		E40F66B90FB3029A00D92710 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
@@ -68,6 +74,7 @@
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				1D3623EC0D0F72F000981E51 /* CoreGraphics.framework in Frameworks */,
 				E40F66BA0FB3029A00D92710 /* CFNetwork.framework in Frameworks */,
+				54A0F9C6124127CC008878EF /* SystemConfiguration.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,7 +84,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1D6058910D05DD3D006BFB54 /* SOCKS.app */,
+				1D6058910D05DD3D006BFB54 /* Tethering.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -85,17 +92,8 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				E40F66000FB1E38600D92710 /* SocksProxy.h */,
-				E40F65FF0FB1E38600D92710 /* SocksProxy.m */,
-				54122F1F10D88DBE00836166 /* SocksProxyController.h */,
-				5463346A10DA6BE400D3A3AE /* myipaddr.h */,
-				5463346B10DA6BE400D3A3AE /* myipaddr.c */,
-				54122F1A10D88D4900836166 /* SocksProxyController.m */,
-				5463365310DABA8E00D3A3AE /* AppDelegate.h */,
-				5463365410DABA8E00D3A3AE /* AppDelegate.m */,
-				5463365510DABA8E00D3A3AE /* InfoController.h */,
-				5463365610DABA8E00D3A3AE /* InfoController.m */,
-				5463365710DABA8E00D3A3AE /* main.m */,
+				54074CF1124126F10036116E /* Other Sources */,
+				54074CEF124126A70036116E /* View Controllers */,
 				E4D543FE0FAB45DC00630176 /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
@@ -111,22 +109,67 @@
 				1D3623EB0D0F72F000981E51 /* CoreGraphics.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
+				54A0F9C5124127CC008878EF /* SystemConfiguration.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		E4D543FE0FAB45DC00630176 /* Resources */ = {
+		54074CEF124126A70036116E /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				54122F1F10D88DBE00836166 /* SocksProxyController.h */,
+				54122F1A10D88D4900836166 /* SocksProxyController.m */,
+				542A644A1241261A003497CD /* SocksProxyController_TableView.h */,
+				542A644B1241261A003497CD /* SocksProxyController_TableView.m */,
+				5463365510DABA8E00D3A3AE /* InfoController.h */,
+				5463365610DABA8E00D3A3AE /* InfoController.m */,
+			);
+			name = "View Controllers";
+			sourceTree = "<group>";
+		};
+		54074CF1124126F10036116E /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				54074CF2124127320036116E /* SocksProxy_Prefix.pch */,
+				E40F66000FB1E38600D92710 /* SocksProxy.h */,
+				E40F65FF0FB1E38600D92710 /* SocksProxy.m */,
+				542A644C1241261A003497CD /* UIDevice_Extended.h */,
+				542A644D1241261A003497CD /* UIDevice_Extended.m */,
+				5463365310DABA8E00D3A3AE /* AppDelegate.h */,
+				5463365410DABA8E00D3A3AE /* AppDelegate.m */,
+				5463365710DABA8E00D3A3AE /* main.m */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		54074CF3124127510036116E /* images */ = {
 			isa = PBXGroup;
 			children = (
 				49B6F91A12394DEC005D89AC /* icon.png */,
 				49B6F91B12394DEC005D89AC /* icon@2x.png */,
 				49B6F91C12394DEC005D89AC /* iTunesArtwork */,
-				E4D544010FAB45DC00630176 /* Info.plist */,
-				E4D544020FAB45DC00630176 /* MainWindow.xib */,
 				E4E97FC10FB453CE00516113 /* receiveserverOn.png */,
 				E4E97FC40FB453CE00516113 /* receiveserverOff.png */,
 				E4CE58CB0FCD595A00F80C27 /* info.png */,
+			);
+			name = images;
+			sourceTree = "<group>";
+		};
+		54074CF4124127690036116E /* xibs */ = {
+			isa = PBXGroup;
+			children = (
+				E4D544020FAB45DC00630176 /* MainWindow.xib */,
 				E4D544670FAB4F1A00630176 /* InfoView.xib */,
+			);
+			name = xibs;
+			sourceTree = "<group>";
+		};
+		E4D543FE0FAB45DC00630176 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				54074CF4124127690036116E /* xibs */,
+				54074CF3124127510036116E /* images */,
+				E4D544010FAB45DC00630176 /* Info.plist */,
 				E4D5443A0FAB4B1600630176 /* Info.html */,
 			);
 			path = Resources;
@@ -149,7 +192,7 @@
 			);
 			name = SOCKS;
 			productName = TrivialStreamTransfer;
-			productReference = 1D6058910D05DD3D006BFB54 /* SOCKS.app */;
+			productReference = 1D6058910D05DD3D006BFB54 /* Tethering.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -203,10 +246,11 @@
 			files = (
 				E40F66010FB1E38600D92710 /* SocksProxy.m in Sources */,
 				54122F1B10D88D4900836166 /* SocksProxyController.m in Sources */,
-				5463346C10DA6BE400D3A3AE /* myipaddr.c in Sources */,
 				5463365810DABA8E00D3A3AE /* AppDelegate.m in Sources */,
 				5463365910DABA8E00D3A3AE /* InfoController.m in Sources */,
 				5463365A10DABA8E00D3A3AE /* main.m in Sources */,
+				542A644E1241261A003497CD /* SocksProxyController_TableView.m in Sources */,
+				542A644F1241261A003497CD /* UIDevice_Extended.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -216,9 +260,11 @@
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = SocksProxy_Prefix.pch;
 				INFOPLIST_FILE = Resources/Info.plist;
 				OTHER_CFLAGS = "-DDEBUG";
-				PRODUCT_NAME = SOCKS;
+				PRODUCT_NAME = Tethering;
 			};
 			name = Debug;
 		};
@@ -227,8 +273,10 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = entitlements.plist;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = SocksProxy_Prefix.pch;
 				INFOPLIST_FILE = Resources/Info.plist;
-				PRODUCT_NAME = SOCKS;
+				PRODUCT_NAME = Tethering;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 			};
 			name = Release;
@@ -257,6 +305,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "-DDEBUG";
 				PREBINDING = NO;
 				SDKROOT = iphoneos4.1;
 				WARNING_CFLAGS = (
@@ -294,6 +343,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = "-DDEBUG";
 				PREBINDING = NO;
 				SDKROOT = iphoneos4.1;
 				WARNING_CFLAGS = (
