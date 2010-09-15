@@ -58,7 +58,10 @@
 	UIWindow *              _window;
 	UITabBarController *    _tabs;
     
-    NSInteger               _networkingCount;
+    NSInteger _networkingCount;
+	NSTimer	*_bgTimer;
+	BOOL _criticalTimeAlertShown;
+	BOOL _warningTimeAlertShown;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *           window;

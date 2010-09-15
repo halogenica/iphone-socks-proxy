@@ -174,15 +174,18 @@
 {
 	if (![self.sendnetworkStream hasSpaceAvailable])
 		return;
-	if (self.sendbufferOffset == self.sendbufferLimit) return;
-	NSInteger   bytesWritten=self.sendbufferLimit - self.sendbufferOffset;
-#ifdef DEBUG
-	NSLog(@"write P>C %d",bytesWritten);
-#endif
-	bytesWritten = [self.sendnetworkStream write:&self.sendbuffer[self.sendbufferOffset] maxLength:bytesWritten];
-#ifdef DEBUG
-	NSLog(@"actually write %d",bytesWritten);
-#endif
+	if (self.sendbufferOffset == self.sendbufferLimit) 
+		return;
+	
+	NSInteger bytesWritten = self.sendbufferLimit - self.sendbufferOffset;
+
+	DLog(@"write P>C %d", bytesWritten);
+
+	bytesWritten = [self.sendnetworkStream write:&self.sendbuffer[self.sendbufferOffset] 
+									   maxLength:bytesWritten];
+
+	DLog(@"actually write %d", bytesWritten);
+
 	assert(bytesWritten != 0);
 	if (bytesWritten == -1) {
 		[self stopSendReceiveWithStatus:@"Network write error"];
@@ -250,7 +253,7 @@
 	self.receivebufferLimit+=bytesRead;
 	
 	NSUInteger lastProtocolLocation = -1;
-	while (self.receivebufferLimit>self.receivebufferOffset) {
+	while (self.receivebufferLimit > self.receivebufferOffset) {
 		// if the protocol did not advance then it is an indication that we dont
 		// have enough data in self.receivebuffer
 		// we should exit this handler and wait for it to be called again with more
@@ -258,12 +261,11 @@
 			break;
 		lastProtocolLocation=self.protocolLocation;
 		
-		uint8_t *s=self.receivebuffer+self.receivebufferOffset;
-		uint8_t *e=self.receivebuffer+self.receivebufferLimit;
+		uint8_t *s = self.receivebuffer + self.receivebufferOffset;
+		uint8_t *e = self.receivebuffer + self.receivebufferLimit;
 		
-#ifdef DEBUG
-		NSLog(@"protocol %d %d",self.protocolLocation,e-s);
-#endif
+		DLog(@"protocol %d %d", self.protocolLocation, e - s);
+
 		switch (self.protocolLocation) {
 			case 0: {// The initial greeting from the client is
 				// SOCKS protocl version
@@ -294,9 +296,8 @@
 					buf[1]= auth[i];
 				} else {
 					buf[1] = 0xff;
-#ifdef DEBUG
-					NSLog(@"unsupported authentication %d %d",auth[0],nauth);
-#endif
+					
+					DLog(@"unsupported authentication %d %d", auth[0],nauth);
 				}
 				
 				if ([self sendData:buf size:2] != 2) {
@@ -475,15 +476,15 @@
 
     switch (eventCode) {
         case NSStreamEventOpenCompleted: {
-#ifdef DEBUG
-			NSLog(@"Open %@",streamName);
-#endif
+
+			DLog(@"Open %@", streamName);
+
             [self.delegate _updateStatus:@"Opened connection"];
         } break;
         case NSStreamEventHasBytesAvailable: {
-#ifdef DEBUG
-			NSLog(@"Receive %@",streamName);
-#endif			
+			
+			DLog(@"Receive %@", streamName);
+	
 			if (aStream == self.remoteReceiveNetworkStream) {
 				// data is coming from the remote site
 				NSInteger       bytesRead;
@@ -504,9 +505,9 @@
             }
         } break;
         case NSStreamEventHasSpaceAvailable: {
-#ifdef DEBUG
-			NSLog(@"Send %@",streamName);
-#endif			
+
+			DLog(@"Send %@", streamName);
+
 			if (aStream == self.remoteSendNetworkStream) {
 				//remote host is ready to receive data
 				[self sendremoteBuffer];
@@ -526,9 +527,9 @@
         } break;
         case NSStreamEventEndEncountered: {
             // ignore
-#ifdef DEBUG
-			NSLog(@"End %@",streamName);
-#endif			
+
+			DLog(@"End %@",streamName);
+
         } break;
         default: {
             assert(NO);
