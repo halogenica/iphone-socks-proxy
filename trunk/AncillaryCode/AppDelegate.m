@@ -168,7 +168,7 @@
 		&& !_criticalTimeAlertShown)
 	{
 		NSString *msg = NSLocalizedString(@"Critical: Tether time expiring in %.0f seconds", nil);
-		DLog(msg);
+		DLog(msg,timeLeft);
 		
 		// build the UIAlert to be displayed
 		notif = [UILocalNotification new];
@@ -180,7 +180,7 @@
 			&& !_warningTimeAlertShown)
 	{
 		NSString *msg = NSLocalizedString(@"Warning: Tether time expiring in %d minutes", nil);
-		DLog(msg);
+		DLog(msg,(int)(timeLeft/60));
 		
 		// build the UIAlert to be displayed
 		notif = [UILocalNotification new];

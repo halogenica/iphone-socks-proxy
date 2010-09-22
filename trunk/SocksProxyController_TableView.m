@@ -25,7 +25,9 @@ typedef enum {
 	SocksProxyTableRowPort,
 	// connections section
 	SocksProxyTableRowConnectionsOpen = 0,
-	SocksProxyTableRowConnections
+	SocksProxyTableRowConnections,
+    SocksProxyTableRowDownload,
+    SocksProxyTableRowUpload
 } SocksProxyTableRow;
 
 @implementation SocksProxyController (TableView)
@@ -59,7 +61,7 @@ typedef enum {
 			return 2;
 			
 		case SocksProxyTableSectionConnections:
-			return 2;
+			return 4;
 	}
 	
 	return 0;
@@ -111,6 +113,16 @@ typedef enum {
 				case SocksProxyTableRowConnectionsOpen:
 					text = @"open";
 					detailText = [[NSNumber numberWithInt:self.currentOpenConnections] stringValue];
+					break;
+
+				case SocksProxyTableRowUpload:
+					text = @"up";
+					detailText = [[NSNumber numberWithInt:self.uploadData] stringValue];
+					break;
+					
+				case SocksProxyTableRowDownload:
+					text = @"down";
+					detailText = [[NSNumber numberWithInt:self.downloadData] stringValue];
 					break;
 			}
 			break;
