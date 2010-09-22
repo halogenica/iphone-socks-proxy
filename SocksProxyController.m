@@ -145,7 +145,16 @@
 
 	[self refreshProxyTable];
 }
-
+- (void)_downloadData:(NSInteger)bytes
+{
+    self.downloadData += bytes;
+	[self refreshProxyTable];
+}
+- (void)_uploadData:(NSInteger)bytes;
+{
+    self.uploadData += bytes;
+	[self refreshProxyTable];
+}
 #pragma mark * Core transfer code
 
 // This is the code that actually does the networking.
@@ -406,7 +415,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 @synthesize currentAddress;
 @synthesize currentOpenConnections;
 @synthesize currentConnectionCount;
-
+@synthesize downloadData, uploadData;
 @synthesize statusLabel       = _statusLabel;
 @synthesize activityIndicator = _activityIndicator;
 @synthesize startOrStopButton = _startOrStopButton;
@@ -418,7 +427,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 
 - (void)applicationDidEnterForeground:(NSNotification *)n
 {
-	DLog(@"refreshing ip address");
+	DLog(@"refreshing ip address",n);
 	
 	// refresh the IP address, just in case
 	self.currentAddress = [UIDevice localWiFiIPAddress];

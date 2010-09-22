@@ -19,14 +19,16 @@
 #import <UIKit/UIKit.h>
 
 enum {
-    kSendBufferSize = 32768,
-    kReceiveBufferSize = 32768
+    kSendBufferSize = 100000,
+    kReceiveBufferSize = 200000
 };
 
 @protocol SocksProxyDelegate <NSObject>
 - (void)_updateStatus:(NSString *)statusString;
 - (void)_sendreceiveDidStart;
 - (void) _sendreceiveDidStopWithStatus:(NSString *)statusString;
+- (void)_downloadData:(NSInteger)bytes;
+- (void)_uploadData:(NSInteger)bytes;
 @end
 
 @interface SocksProxy : NSObject <NSStreamDelegate>

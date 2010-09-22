@@ -24,6 +24,7 @@
 #include <netinet/in.h>
 
 @interface SocksProxy ()
+- (void)socksProtocol;
 
 // Properties that don't need to be seen by the outside world.
 
@@ -130,6 +131,19 @@
 
 - (void)stopSendReceiveWithStatus:(NSString *)statusString
 {
+    if (statusString == nil)
+    {
+        DLog(@"stop with no status");
+        if (self.receivebufferOffset != self.receivebufferLimit) {
+            DLog(@"We have %d received data",self.receivebufferLimit-self.receivebufferOffset);
+            return;
+        }
+        if (self.sendbufferLimit != self.sendbufferOffset) {
+            DLog(@"We have send data %d",self.sendbufferLimit != self.sendbufferOffset);
+            return;
+        }
+    }
+    
     if (self.receivenetworkStream != nil) {
         self.receivenetworkStream.delegate = nil;
         [self.receivenetworkStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
@@ -197,25 +211,57 @@
 		self.sendbufferLimit=0;
 	}
 }
+- (void)readReceiveNetwork
+{
+    NSInteger       bytesRead = kReceiveBufferSize-self.receivebufferLimit;
+    if (bytesRead == 0) {
+        DLog(@"receive buffer full");
+        return;
+    }
+    bytesRead = [self.receivenetworkStream read:&self.receivebuffer[self.receivebufferLimit]
+                                      maxLength:bytesRead];
+    DLog(@"Actually read %d",bytesRead);
+    if (bytesRead == -1) {
+        [self stopSendReceiveWithStatus:@"Network read error"];
+    } else if (bytesRead == 0) {
+        [self stopSendReceiveWithStatus:nil];
+    } else {
+        self.receivebufferLimit+=bytesRead;
+        [self socksProtocol];
+    }
+    
+}
+- (void)checkReceiveBuffer
+{
+	if (self.receivebufferOffset==self.receivebufferLimit) {
+		self.receivebufferOffset=0;
+		self.receivebufferLimit=0;
+	}
+    if ([self.receivenetworkStream hasBytesAvailable]) {
+        DLog(@"more data");
+        [self readReceiveNetwork];
+    }
+}
 - (void)sendremoteBuffer
 {
 	if (![self.remoteSendNetworkStream hasSpaceAvailable])
 		return;
 
-	if (self.receivebufferOffset == self.receivebufferLimit) return;
-	NSInteger   bytesWritten;
+	if (self.receivebufferOffset == self.receivebufferLimit)
+        return;
+	NSInteger   bytesWritten=self.receivebufferLimit - self.receivebufferOffset;
+	DLog(@"write P>S %d", bytesWritten);
 	bytesWritten = [self.remoteSendNetworkStream write:&self.receivebuffer[self.receivebufferOffset]
-								maxLength:self.receivebufferLimit - self.receivebufferOffset];
+								maxLength:bytesWritten];
+	DLog(@"actually write %d", bytesWritten);
 	assert(bytesWritten != 0);
 	if (bytesWritten == -1) {
 		[self stopSendReceiveWithStatus:@"Remote network write error"];
 	} else {
 		self.receivebufferOffset += bytesWritten;
+        [self.delegate _uploadData:bytesWritten];
 	}
-	if (self.receivebufferOffset==self.receivebufferLimit) {
-		self.receivebufferOffset=0;
-		self.receivebufferLimit=0;
-	}
+    [self checkReceiveBuffer];
 }
 
 
@@ -232,39 +278,22 @@
 
 - (void)socksProtocol
 {
-	
-	NSInteger       bytesRead;
-	
-	// [self.delegate _updateStatus:@"Receiving"];
-	
-	// Pull some data off the network.
-	
-	bytesRead = [self.receivenetworkStream read:&self.receivebuffer[self.receivebufferLimit]
-									  maxLength:kReceiveBufferSize-self.receivebufferLimit];
-	if (bytesRead == -1) {
-		[self stopSendReceiveWithStatus:@"Network read error"];
-		return;
-	}
-	if (bytesRead == 0) {
-		[self stopSendReceiveWithStatus:nil];
-		return;
-	}
-	
-	self.receivebufferLimit+=bytesRead;
-	
 	NSUInteger lastProtocolLocation = -1;
 	while (self.receivebufferLimit > self.receivebufferOffset) {
-		// if the protocol did not advance then it is an indication that we dont
-		// have enough data in self.receivebuffer
-		// we should exit this handler and wait for it to be called again with more
-		if(lastProtocolLocation == self.protocolLocation)
-			break;
-		lastProtocolLocation=self.protocolLocation;
 		
 		uint8_t *s = self.receivebuffer + self.receivebufferOffset;
 		uint8_t *e = self.receivebuffer + self.receivebufferLimit;
 		
 		DLog(@"protocol %d %d", self.protocolLocation, e - s);
+
+		// if the protocol did not advance then it is an indication that we dont
+		// have enough data in self.receivebuffer
+		// we should exit this handler and wait for it to be called again with more
+		if(lastProtocolLocation == self.protocolLocation) {
+            DLog(@"Wait for more data %d",lastProtocolLocation);
+			break;
+        }
+		lastProtocolLocation=self.protocolLocation;
 
 		switch (self.protocolLocation) {
 			case 0: {// The initial greeting from the client is
@@ -442,10 +471,7 @@
 			} break;
 		}
 	}
-	if (self.receivebufferLimit==self.receivebufferOffset) {
-		self.receivebufferOffset=0;
-		self.receivebufferLimit=0;
-	}
+    [self checkReceiveBuffer];
 }
 
 - (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode
@@ -487,9 +513,11 @@
 	
 			if (aStream == self.remoteReceiveNetworkStream) {
 				// data is coming from the remote site
-				NSInteger       bytesRead;
+				NSInteger       bytesRead=kSendBufferSize-self.sendbufferLimit;
+                DLog(@"S>P going to read %d",bytesRead);
 				bytesRead = [self.remoteReceiveNetworkStream read:&self.sendbuffer[self.sendbufferLimit]
-												  maxLength:kSendBufferSize-self.sendbufferLimit];
+												  maxLength:bytesRead];
+                DLog(@"Actually read %d",bytesRead);
 				if (bytesRead == -1) {
 					[self stopSendReceiveWithStatus:@"Remote network read error"];
 				} else if (bytesRead == 0) {
@@ -497,11 +525,13 @@
 					break;
 				} else {
 					self.sendbufferLimit+=bytesRead;
+                    [self.delegate _downloadData:bytesRead];
 					[self sendBuffer];
 				}
 				break;
 			} else if (aStream == self.receivenetworkStream) {
-				[self socksProtocol];
+                DLog(@"going to read C>P");
+                [self readReceiveNetwork];
             }
         } break;
         case NSStreamEventHasSpaceAvailable: {
@@ -511,6 +541,11 @@
 			if (aStream == self.remoteSendNetworkStream) {
 				//remote host is ready to receive data
 				[self sendremoteBuffer];
+                // The sending may have freed up space that can be used to move data from the Computer side to the Server side
+                if (self.receivebufferLimit > self.receivebufferOffset) {
+                    DLog(@"Processing more data");
+                    [self socksProtocol];
+                }
 				break;
 			} else if (aStream == self.sendnetworkStream) {
 				//local host is ready to receive data

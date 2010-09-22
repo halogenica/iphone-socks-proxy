@@ -51,6 +51,8 @@ enum {
 @property (nonatomic, copy) NSString *currentAddress;
 @property (nonatomic, assign) NSInteger currentOpenConnections;
 @property (nonatomic, assign) NSInteger currentConnectionCount;
+@property (nonatomic, assign) NSInteger uploadData;
+@property (nonatomic, assign) NSInteger downloadData;
 @property (nonatomic, retain) IBOutlet UILabel *                   statusLabel;
 @property (nonatomic, retain) IBOutlet UIActivityIndicatorView *   activityIndicator;
 @property (nonatomic, retain) IBOutlet UIButton *                  startOrStopButton;
