@@ -53,15 +53,15 @@
 
 #import "AppDelegate.h"
 #import "InfoController.h"
+#import "SocksProxyController.h"
 
 /// background timer task constants
 // converts mins to seconds
 #define MINS(N) N * 60
 // number of minutes until the critical or warning UIAlert is displayed
-#define PROXY_BG_TIME_CRITICAL_MINS 1
-#define PROXY_BG_TIME_WARNING_MINS 7
+#define PROXY_BG_TIME_WARNING_MINS 1
 // interval of seconds to poll/check the time remaining for the background task
-#define PROXY_BG_TIME_CHECK_SECS 10
+#define PROXY_BG_TIME_CHECK_SECS 5
 
 @interface AppDelegate ()
 @property (nonatomic, assign) NSInteger networkingCount;
@@ -76,6 +76,7 @@
 
 @synthesize window = _window;
 @synthesize tabs = _tabs;
+@synthesize viewController = _viewController;
 
 @synthesize networkingCount = _networkingCount;
 
@@ -83,7 +84,8 @@
 {
     #pragma unused(application)
     assert(self.window != nil);
-    assert(self.tabs != nil);
+//    assert(self.tabs != nil);
+//	assert(self.viewController != nil);
 	
 	// Disable device sleep mode
 	[UIApplication sharedApplication].idleTimerDisabled = YES;
@@ -91,9 +93,9 @@
 	// Enable proximity sensor (public as of 3.0)
 	[UIDevice currentDevice].proximityMonitoringEnabled = YES;
     
-    [self.window addSubview:self.tabs.view];
+    [self.window addSubview:self.viewController.view];
     
-    self.tabs.selectedIndex = [[NSUserDefaults standardUserDefaults] integerForKey:@"currentTab"];
+//    self.tabs.selectedIndex = [[NSUserDefaults standardUserDefaults] integerForKey:@"currentTab"];
     
 	[self.window makeKeyAndVisible];
 }
@@ -113,10 +115,10 @@
     DLog(@"%s", __func__);
 
 	// if no networking, then ignore the bg operations
-	if (![UIApplication sharedApplication].networkActivityIndicatorVisible)
-		return;
+//	if (![UIApplication sharedApplication].networkActivityIndicatorVisible)
+//		return;
 	
-	_criticalTimeAlertShown = NO;
+//	[self performSelector:@selector(checkBackgroundTimeRemaining:)];
 	_warningTimeAlertShown = NO;
 	_bgTimer = [NSTimer scheduledTimerWithTimeInterval:PROXY_BG_TIME_CHECK_SECS
 												target:self
@@ -134,6 +136,8 @@
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
+	application.applicationIconBadgeNumber = 0;
+	[application cancelAllLocalNotifications];
 	[_bgTimer invalidate];
 }
 
@@ -151,47 +155,46 @@
     [UIApplication sharedApplication].networkActivityIndicatorVisible = (self.networkingCount > 0);
 }
 
-- (void)checkBackgroundTimeRemaining:(NSTimer *)tmr
+- (void)checkBackgroundTimeRemaining:(NSTimer *)timer
 {
 	// if no networking, then ignore the bg operations
-	if (![UIApplication sharedApplication].networkActivityIndicatorVisible)
+	if ([UIApplication sharedApplication].networkActivityIndicatorVisible == FALSE)
 		return;
 	
 	NSTimeInterval timeLeft = [UIApplication sharedApplication].backgroundTimeRemaining;
 	
 	DLog(@"Background time remaining: %.0f seconds (~%d mins)", timeLeft, (int)timeLeft / 60);
 
-	UILocalNotification *notif = nil;
-	
-	// check the critical and warning thresholds
-	if (timeLeft <= MINS(PROXY_BG_TIME_CRITICAL_MINS)
-		&& !_criticalTimeAlertShown)
+	UILocalNotification *badge = nil;
+	badge = [UILocalNotification new];
+	[badge setApplicationIconBadgeNumber:(int)timeLeft/60];
+	[[UIApplication sharedApplication] presentLocalNotificationNow:badge];
+	[badge release];
+	if (timeLeft < MINS(1))
 	{
-		NSString *msg = NSLocalizedString(@"Critical: Tether time expiring in %.0f seconds", nil);
-		DLog(msg,timeLeft);
-		
-		// build the UIAlert to be displayed
-		notif = [UILocalNotification new];
-		notif.alertBody = [NSString stringWithFormat:msg, timeLeft];
-		
-		_criticalTimeAlertShown = YES;
+		[UIApplication sharedApplication].applicationIconBadgeNumber = 0;
 	}
-	else if (timeLeft <= MINS(PROXY_BG_TIME_WARNING_MINS)
-			&& !_warningTimeAlertShown)
+	
+	UILocalNotification *notif = nil;
+
+	// check the critical and warning thresholds
+	if (timeLeft < MINS(PROXY_BG_TIME_WARNING_MINS)
+		&& !_warningTimeAlertShown)
 	{
-		NSString *msg = NSLocalizedString(@"Warning: Tether time expiring in %d minutes", nil);
-		DLog(msg,(int)(timeLeft/60));
+		NSString *msg = NSLocalizedString(@"Your connection will be closed immediately", nil);
+		DLog(msg,nil);
 		
 		// build the UIAlert to be displayed
 		notif = [UILocalNotification new];
-		notif.alertBody = [NSString stringWithFormat:msg, (int)timeLeft / 60];
+		notif.alertBody = [NSString stringWithFormat:msg, PROXY_BG_TIME_WARNING_MINS];
+		notif.soundName = UILocalNotificationDefaultSoundName;
 		
 		_warningTimeAlertShown = YES;
 	}
-	
+ 
 	if (notif) 
 	{		
-		notif.alertAction = NSLocalizedString(@"Renew Time", nil);
+		notif.alertAction = NSLocalizedString(@"Renew", nil);
 		
 		// show the alert immediately
 		[[UIApplication sharedApplication] presentLocalNotificationNow:notif];

@@ -61,6 +61,7 @@
 
 - (void)_loadInfoContent
 {
+	UIWebView * myWebView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, 320, 416)];
     NSString *  	infoFilePath;
     NSURLRequest *  request;
 
@@ -70,8 +71,13 @@
     request = [NSURLRequest requestWithURL:[NSURL fileURLWithPath:infoFilePath]];
     assert(request != nil);
     
-    [self.webView loadRequest:request];
-	self.webView.backgroundColor = [UIColor scrollViewTexturedBackgroundColor];
+	[myWebView loadRequest:request];
+	myWebView.backgroundColor = [UIColor scrollViewTexturedBackgroundColor];
+	
+	[self.view addSubview:myWebView];
+	
+ //   [self.webView loadRequest:request];
+//	self.webView.backgroundColor = [UIColor scrollViewTexturedBackgroundColor];
 }
 
 #pragma mark * View controller boilerplate
@@ -81,9 +87,28 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    assert(self.webView != nil);
-    
+  //  assert(self.webView != nil);
+	UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone 
+																				target:self 
+																				action:@selector(doneButtonPressed:)];
+	self.navigationItem.rightBarButtonItem = doneButton;
+	[doneButton release];
+	
     [self _loadInfoContent];
+}
+
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
+        // Custom initialization
+		self.title = @"Getting Started";
+    }
+    return self;
+}
+
+
+- (IBAction)doneButtonPressed:(id)sender {
+	[self.parentViewController dismissModalViewControllerAnimated:YES];
 }
 
 - (void)viewDidUnload
