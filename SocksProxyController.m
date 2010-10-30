@@ -1,26 +1,31 @@
-/*
- #  SOCKS - SOCKS Proxy for iPhone
- #  Copyright (C) 2009 Ehud Ben-Reuven
- #  udi@benreuven.com
- #
- # This program is free software; you can redistribute it and/or
- # modify it under the terms of the GNU General Public License
- # as published by the Free Software Foundation version 2.
- #
- # This program is distributed in the hope that it will be useful,
- # but WITHOUT ANY WARRANTY; without even the implied warranty of
- # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- # GNU General Public License for more details.
- #
- # You should have received a copy of the GNU General Public License
- # along with this program; if not, write to the Free Software
- # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,USA.
- */
+//
+//	SOCKS - SOCKS Proxy for iPhone
+//	Copyright (C) 2009 Ehud Ben-Reuven
+//	udi@benreuven.com
+//
+//	This program is free software; you can redistribute it and/or
+//	modify it under the terms of the GNU General Public License
+//	as published by the Free Software Foundation version 2.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,USA.
+//
+//  Enhanced by Daniel Sachse on 10/30/10.
+//  Copyright 2010 coffeecoding. All rights reserved.
+//
 
 #import "SocksProxyController.h"
 #import "SocksProxyController_TableView.h"
 #import "AppDelegate.h"
 #import "UIDevice_Extended.h"
+#import "MOGlassButton.h"
+#import "InfoController.h"
 
 #include <CFNetwork/CFNetwork.h>
 
@@ -49,10 +54,12 @@
 // Because sendreceiveStream is declared as an array, you have to use a custom getter.  
 // A synthesised getter doesn't compile.
 
+
 - (SocksProxy **)sendreceiveStream
 {
     return self->_sendreceiveStream;
 }
+
 
 #pragma mark * Status management
 
@@ -61,16 +68,21 @@
 - (void)_serverDidStartOnPort:(int)port
 {
     assert( (port > 0) && (port < 65536) );
-    //self.statusLabel.text = [NSString stringWithFormat:@"%d.%d.%d.%d %d", (ipaddr>>24),0xff&(ipaddr>>16),0xff&(ipaddr>>8),0xff&ipaddr, port];
-    self.statusLabel.text = NSLocalizedString(@"Started", nil);
-	self.currentPort = port;
+
+	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+	
 	self.currentAddress = [UIDevice localWiFiIPAddress];
+	self.currentPort = port;
+	self.currentStatusText = NSLocalizedString(@"Started", nil);	
     [self.startOrStopButton setTitle:NSLocalizedString(@"Stop", nil)
 							forState:UIControlStateNormal];
-    self.tabBarItem.image = [UIImage imageNamed:@"receiveserverOn.png"];
+	[self.startOrStopButton setupAsRedButton];
 	
 	[self refreshProxyTable];
+	
+	DLog(@"Server Started");
 }
+
 
 - (void)_serverDidStopWithReason:(NSString *)reason
 {
@@ -78,17 +90,20 @@
         reason = NSLocalizedString(@"Stopped", nil);
     }
 	
+	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+	
 	self.currentAddress = @"";
 	self.currentPort = 0;
-    self.statusLabel.text = reason;
+	self.currentStatusText = reason;
     [self.startOrStopButton setTitle:NSLocalizedString(@"Start" , nil)
 							forState:UIControlStateNormal];
-    self.tabBarItem.image = [UIImage imageNamed:@"receiveserverOff.png"];
-
-	DLog(@"Server Stopped: %@", reason);
+	[self.startOrStopButton setupAsGreenButton];
 
 	[self refreshProxyTable];
+
+	DLog(@"Server Stopped: %@", reason);
 }
+
 
 - (NSInteger)countOpen
 {
@@ -102,57 +117,63 @@
 	return countOpen;
 }
 
+
 - (void)_sendreceiveDidStart
 {
-    self.statusLabel.text = NSLocalizedString(@"Receiving", nil);
+    self.currentStatusText = NSLocalizedString(@"Receiving", nil);
 	
 	NSInteger countOpen = [self countOpen];
 	self.currentOpenConnections = countOpen;
 	
 	if (!countOpen) {
-		[self.activityIndicator startAnimating];
 		[[AppDelegate sharedAppDelegate] didStartNetworking];
 	}
 	
 	[self refreshProxyTable];
 }
 
+
 - (void)_updateStatus:(NSString *)statusString
 {
     assert(statusString != nil);
-    self.statusLabel.text = statusString;
+
+	self.currentStatusText = statusString;
 
 	DLog(@"Status: %@", statusString);
 
 }
+
 
 - (void)_sendreceiveDidStopWithStatus:(NSString *)statusString
 {
     if (statusString == nil) {
         statusString = NSLocalizedString(@"Receive succeeded", nil);
     }
-    self.statusLabel.text = statusString;
-	
+	self.currentStatusText = statusString;
 	NSInteger countOpen = [self countOpen];
 	self.currentOpenConnections = countOpen;
-	
 	if (!countOpen) {
-		[self.activityIndicator stopAnimating];
 		[[AppDelegate sharedAppDelegate] didStopNetworking];		
 	}
 
-	DLog(@"Connection ended %d %d: %@", countOpen, self.nConnections, statusString);
-
 	[self refreshProxyTable];
+	
+	DLog(@"Connection ended %d %d: %@", countOpen, self.nConnections, statusString);
 }
+
+
 - (void)_downloadData:(NSInteger)bytes
 {
     self.downloadData += bytes;
+	
 	[self refreshProxyTable];
 }
+
+
 - (void)_uploadData:(NSInteger)bytes;
 {
     self.uploadData += bytes;
+	
 	[self refreshProxyTable];
 }
 #pragma mark * Core transfer code
@@ -161,6 +182,7 @@
 
 @synthesize netService      = _netService;
 @synthesize listeningSocket = _listeningSocket;
+
 
 - (BOOL)isStarted
 {
@@ -182,6 +204,7 @@
         }
     }
 }
+
 
 - (void)_acceptConnection:(int)fd
 {
@@ -222,6 +245,7 @@
 	[self refreshProxyTable];
 }
 
+
 static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef address, const void *data, void *info)
     // Called by CFSocket when someone connects to our listening socket.  
     // This implementation just bounces the request up to Objective-C.
@@ -243,6 +267,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
     [obj _acceptConnection:*(int *)data];
 }
 
+
 - (void)netService:(NSNetService *)sender didNotPublish:(NSDictionary *)errorDict
     // A NSNetService delegate callback that's called if our Bonjour registration 
     // fails.  We respond by shutting down the server.
@@ -260,6 +285,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
     
     [self _stopServer:@"Registration failed"];
 }
+
 
 - (void)_startServer
 {
@@ -375,6 +401,7 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
     }
 }
 
+
 - (void)_stopServer:(NSString *)reason
 {
 	int i = 0;
@@ -409,6 +436,19 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 	[self refreshProxyTable];
 }
 
+
+- (IBAction)showGettingStartedAction:(id)sender
+{
+	InfoController *infoViewController = [[InfoController alloc] init];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:infoViewController];
+	[[navigationController navigationBar] setBarStyle:UIBarStyleDefault];
+	[self presentModalViewController:navigationController animated:YES];
+	
+	[navigationController release];
+	[infoViewController release];
+}
+
+
 #pragma mark * View controller boilerplate
 
 @synthesize currentPort;
@@ -416,14 +456,16 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 @synthesize currentOpenConnections;
 @synthesize currentConnectionCount;
 @synthesize downloadData, uploadData;
-@synthesize statusLabel       = _statusLabel;
-@synthesize activityIndicator = _activityIndicator;
+@synthesize currentStatusText;//       = _statusLabel;
 @synthesize startOrStopButton = _startOrStopButton;
+@synthesize gettingStartedButton = _gettingStartedButton;
+
 
 - (void)refreshProxyTable
 {
 	[proxyTableView reloadData];
 }
+
 
 - (void)applicationDidEnterForeground:(NSNotification *)n
 {
@@ -434,31 +476,42 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 	[self refreshProxyTable];
 }
 
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	[UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleBlackOpaque;
+	[UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(applicationDidEnterForeground:)
 												 name:UIApplicationWillEnterForegroundNotification
 											   object:nil];
-    assert(self.statusLabel != nil);
-    assert(self.activityIndicator != nil);
     assert(self.startOrStopButton != nil);
     
-    self.activityIndicator.hidden = YES;
-    self.statusLabel.text = NSLocalizedString(@"Tap Start to start the server", nil);
+	self.currentStatusText = NSLocalizedString(@"Tap Start to start the server", nil);
+	[self.startOrStopButton setupAsGreenButton];
+/*	
+	UIGraphicsBeginImageContext(self.startOrStopButton.frame.size);
+	
+	CGContextRef theContext = UIGraphicsGetCurrentContext();
+	[self.startOrStopButton.layer renderInContext:theContext];
+	UIImage *theImage = UIGraphicsGetImageFromCurrentImageContext();
+	NSData *theData = UIImagePNGRepresentation(theImage);
+	[theData writeToFile:@"/Users/danielsachse/Desktop/setupAsGreenButton.png" atomically:NO];
+	
+	UIGraphicsEndImageContext();
+*/	
+	[self.gettingStartedButton setupAsWhiteButton];
 	
 	self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
 }
 
+
 - (void)viewDidUnload
 {
     [super viewDidUnload];
-    self.statusLabel = nil;
-    self.activityIndicator = nil;
     self.startOrStopButton = nil;
 }
+
 
 - (void)dealloc
 {
@@ -468,10 +521,10 @@ static void AcceptCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef a
 		[self.sendreceiveStream[i] dealloc];
     
     [self->_statusLabel release];
-    [self->_activityIndicator release];
     [self->_startOrStopButton release];
 
     [super dealloc];
 }
+
 
 @end

@@ -5,6 +5,9 @@
 //  Created by C. Bess on 9/5/10.
 //  Copyright 2010 Christopher Bess. All rights reserved.
 //
+//  Enhanced by Daniel Sachse on 10/30/10.
+//  Copyright 2010 coffeecoding. All rights reserved.
+//
 
 #import "SocksProxyController_TableView.h"
 
@@ -24,10 +27,11 @@ typedef enum {
 	SocksProxyTableRowAddress,
 	SocksProxyTableRowPort,
 	// connections section
-	SocksProxyTableRowConnectionsOpen = 0,
-	SocksProxyTableRowConnections,
-    SocksProxyTableRowDownload,
-    SocksProxyTableRowUpload
+	SocksProxyTableRowConnections = 0,
+	SocksProxyTableRowConnectionsOpen,
+    SocksProxyTableRowUpload,
+	SocksProxyTableRowDownload,
+	SocksProxyTableRowStatus
 } SocksProxyTableRow;
 
 @implementation SocksProxyController (TableView)
@@ -37,10 +41,10 @@ typedef enum {
 - (NSString *)tableView:(UITableView *)table titleForHeaderInSection:(NSInteger)section
 {	
 	#pragma unused(table)
-	
+	/*
 	if (section == SocksProxyTableSectionConnections)
 		return @"Connections";
-	
+	*/
     return nil;
 }
 
@@ -61,10 +65,16 @@ typedef enum {
 			return 2;
 			
 		case SocksProxyTableSectionConnections:
-			return 4;
+			return 5;
 	}
 	
 	return 0;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath 
+{
+	//cell.selected = NO;
+	[tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)table cellForRowAtIndexPath:(NSIndexPath *)indexPath 
@@ -76,54 +86,74 @@ typedef enum {
 												   reuseIdentifier:cellId];
 	cell.accessoryType = UITableViewCellAccessoryNone;
 	cell.accessoryView = nil;
+	cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
 	NSString *text = nil; // the caption
 	NSString *detailText = nil;
 	
 	switch (indexPath.section)
 	{
-		case SocksProxyTableSectionGeneral:
+		case (SocksProxyTableSectionGeneral):
 			switch (indexPath.row)
 			{
-				case SocksProxyTableRowAddress:
+				case (SocksProxyTableRowAddress):
+				{
 					text = @"address";
 					detailText = self.currentAddress;
 					if (self.currentAddress.length == 0)
 						detailText = @"n/a";
-					break;
+				}
+				break;
 					
-				case SocksProxyTableRowPort:
+				case (SocksProxyTableRowPort):
+				{
 					text = @"port";
 					if (self.currentPort)
 						detailText = [[NSNumber numberWithInt:self.currentPort] stringValue];
 					else
 						detailText = @"n/a";
-					break;
+				}
+				break;
 			}
 			break;
 			
-		case SocksProxyTableSectionConnections:
+		case (SocksProxyTableSectionConnections):
 			switch (indexPath.row)
 			{
-				case SocksProxyTableRowConnections:
-					text = @"count";
-					detailText = [[NSNumber numberWithInt:self.currentConnectionCount] stringValue];
-					break;
-					
-				case SocksProxyTableRowConnectionsOpen:
+				case (SocksProxyTableRowConnectionsOpen):
+				{
 					text = @"open";
 					detailText = [[NSNumber numberWithInt:self.currentOpenConnections] stringValue];
-					break;
-
-				case SocksProxyTableRowUpload:
-					text = @"up";
-					detailText = [[NSNumber numberWithInt:self.uploadData] stringValue];
-					break;
+				}
+				break;
 					
-				case SocksProxyTableRowDownload:
+				case (SocksProxyTableRowConnections):
+				{
+					text = @"count";
+					detailText = [[NSNumber numberWithInt:self.currentConnectionCount] stringValue];
+				}
+				break;
+					
+				case (SocksProxyTableRowDownload):
+				{
 					text = @"down";
 					detailText = [[NSNumber numberWithInt:self.downloadData] stringValue];
-					break;
+				}
+				break;
+
+				case (SocksProxyTableRowUpload):
+				{
+					text = @"up";
+					detailText = [[NSNumber numberWithInt:self.uploadData] stringValue];
+				}
+				break;
+					
+				case (SocksProxyTableRowStatus):
+				{
+					text = @"status";
+					detailText = self.currentStatusText;
+				}
+				break;
 			}
 			break;
 	}

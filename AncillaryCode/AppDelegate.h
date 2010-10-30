@@ -53,19 +53,23 @@
 
 #import <UIKit/UIKit.h>
 
+@class SocksProxyController;
+
 @interface AppDelegate : NSObject
 {
 	UIWindow *              _window;
 	UITabBarController *    _tabs;
+	SocksProxyController *		_viewController;
     
     NSInteger _networkingCount;
 	NSTimer	*_bgTimer;
-	BOOL _criticalTimeAlertShown;
 	BOOL _warningTimeAlertShown;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *           window;
 @property (nonatomic, retain) IBOutlet UITabBarController * tabs;
+@property (nonatomic, retain) IBOutlet SocksProxyController * viewController;
+
 
 + (AppDelegate *)sharedAppDelegate;
 - (void)didStartNetworking;
