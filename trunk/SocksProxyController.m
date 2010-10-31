@@ -71,6 +71,12 @@
 
 	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
 	
+	// Disable device sleep mode
+	[UIApplication sharedApplication].idleTimerDisabled = YES;
+	
+	// Enable proximity sensor (public as of 3.0)
+	[UIDevice currentDevice].proximityMonitoringEnabled = YES;
+	
 	self.currentAddress = [UIDevice localWiFiIPAddress];
 	self.currentPort = port;
 	self.currentStatusText = NSLocalizedString(@"Started", nil);	
@@ -91,6 +97,12 @@
     }
 	
 	[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+	
+	// Enable device sleep mode
+	[UIApplication sharedApplication].idleTimerDisabled = NO;
+	
+	// Disable proximity sensor (public as of 3.0)
+	[UIDevice currentDevice].proximityMonitoringEnabled = NO;
 	
 	self.currentAddress = @"";
 	self.currentPort = 0;
@@ -164,7 +176,7 @@
 
 - (void)_downloadData:(NSInteger)bytes
 {
-    self.downloadData += bytes;
+    self.downloadData += bytes/1024;
 	
 	[self refreshProxyTable];
 }
@@ -172,7 +184,7 @@
 
 - (void)_uploadData:(NSInteger)bytes;
 {
-    self.uploadData += bytes;
+    self.uploadData += bytes/1024;
 	
 	[self refreshProxyTable];
 }
