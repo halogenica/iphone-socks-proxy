@@ -84,18 +84,9 @@
 {
     #pragma unused(application)
     assert(self.window != nil);
-//    assert(self.tabs != nil);
-//	assert(self.viewController != nil);
-	
-	// Disable device sleep mode
-	[UIApplication sharedApplication].idleTimerDisabled = YES;
-	
-	// Enable proximity sensor (public as of 3.0)
-	[UIDevice currentDevice].proximityMonitoringEnabled = YES;
     
     [self.window addSubview:self.viewController.view];
     
-//    self.tabs.selectedIndex = [[NSUserDefaults standardUserDefaults] integerForKey:@"currentTab"];
     
 	[self.window makeKeyAndVisible];
 }
@@ -115,10 +106,7 @@
     DLog(@"%s", __func__);
 
 	// if no networking, then ignore the bg operations
-//	if (![UIApplication sharedApplication].networkActivityIndicatorVisible)
-//		return;
-	
-//	[self performSelector:@selector(checkBackgroundTimeRemaining:)];
+
 	_warningTimeAlertShown = NO;
 	_bgTimer = [NSTimer scheduledTimerWithTimeInterval:PROXY_BG_TIME_CHECK_SECS
 												target:self
