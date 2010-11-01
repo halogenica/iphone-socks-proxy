@@ -279,6 +279,7 @@
 				INFOPLIST_FILE = Resources/Info.plist;
 				OTHER_CFLAGS = "-DDEBUG";
 				PRODUCT_NAME = Tethering;
+				SDKROOT = iphoneos4.1;
 			};
 			name = Debug;
 		};
@@ -292,6 +293,7 @@
 				INFOPLIST_FILE = Resources/Info.plist;
 				PRODUCT_NAME = Tethering;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				SDKROOT = iphoneos4.1;
 			};
 			name = Release;
 		};
